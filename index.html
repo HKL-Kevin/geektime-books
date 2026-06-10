@@ -1,39 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<title>我的书架</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>极客时间电子书书架</title>
+
 <style>
-body{
-    font-family:sans-serif;
-    max-width:800px;
-    margin:auto;
-    padding:20px;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f5f5;
 }
-.book{
-    padding:10px;
-    margin:10px 0;
-    border:1px solid #ddd;
+
+h1 {
+    text-align: center;
 }
-a{
-    text-decoration:none;
+
+#search {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.book-list {
+    display: grid;
+    gap: 10px;
+}
+
+.book {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.book a {
+    text-decoration: none;
+    color: #0066cc;
+    font-size: 16px;
+}
+
+.book a:hover {
+    text-decoration: underline;
 }
 </style>
+
 </head>
 <body>
 
-<h1>📚 我的书架</h1>
+<h1>📚 极客时间电子书书架</h1>
 
-<div id="books"></div>
+<input
+    type="text"
+    id="search"
+    placeholder="搜索书名..."
+>
+
+<div id="bookList" class="book-list"></div>
 
 <script>
 
-fetch("books.json")
-.then(r => r.json())
-.then(books => {
+let allBooks = [];
+
+function renderBooks(books) {
 
     const container =
-        document.getElementById("books");
+        document.getElementById("bookList");
+
+    container.innerHTML = "";
 
     books.forEach(book => {
 
@@ -43,15 +81,50 @@ fetch("books.json")
         div.className = "book";
 
         div.innerHTML = `
-            <a href="reader.html?book=${encodeURIComponent(book.path)}">
-                ${book.name}
+            <a href="reader.html?book=${encodeURIComponent(book.file)}">
+                ${book.title}
             </a>
         `;
 
         container.appendChild(div);
     });
+}
 
-});
+fetch("books.json")
+    .then(r => r.json())
+    .then(data => {
+
+        allBooks = data;
+
+        renderBooks(allBooks);
+
+    })
+    .catch(err => {
+
+        document.getElementById("bookList")
+            .innerHTML =
+            "<p>加载书单失败</p>";
+
+        console.error(err);
+
+    });
+
+document
+    .getElementById("search")
+    .addEventListener("input", function() {
+
+        const keyword =
+            this.value.toLowerCase();
+
+        const filtered =
+            allBooks.filter(book =>
+                book.title
+                    .toLowerCase()
+                    .includes(keyword)
+            );
+
+        renderBooks(filtered);
+    });
 
 </script>
 
