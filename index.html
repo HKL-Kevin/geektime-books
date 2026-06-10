@@ -81,8 +81,8 @@ function renderBooks(books) {
         div.className = "book";
 
         div.innerHTML = `
-            <a href="reader.html?book=${encodeURIComponent(book.file)}">
-                ${book.title}
+            <a href="reader.html?book=${encodeURIComponent(book.path)}">
+                ${book.name}
             </a>
         `;
 
@@ -118,7 +118,7 @@ document
 
         const filtered =
             allBooks.filter(book =>
-                book.title
+                book.name
                     .toLowerCase()
                     .includes(keyword)
             );
