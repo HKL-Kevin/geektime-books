@@ -2,24 +2,20 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>阅读器</title>
+<title>reader</title>
 
-<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 
 <style>
 html,body{
-    margin:0;
-    padding:0;
     width:100%;
     height:100%;
+    margin:0;
 }
 
 #viewer{
-    position:fixed;
-    left:0;
-    top:0;
-    right:0;
-    bottom:0;
+    width:100%;
+    height:100%;
 }
 </style>
 </head>
@@ -31,32 +27,33 @@ html,body{
 <script>
 
 const params = new URLSearchParams(location.search);
-const bookFile = params.get("book");
+const file = params.get("book");
 
-console.log("book:", bookFile);
+console.log("file=", file);
 
-const book = ePub(bookFile);
-
-const rendition = book.renderTo("viewer", {
-    width: "100%",
-    height: "100%"
-});
+const book = ePub(file);
 
 book.ready.then(() => {
-    console.log("book ready");
+    console.log("BOOK READY");
+}).catch(e => {
+    console.error("BOOK READY ERROR", e);
 });
 
-rendition.on("rendered", (section) => {
-    console.log("rendered:", section.href);
+const rendition = book.renderTo("viewer", {
+    width:"100%",
+    height:"100%"
 });
 
 rendition.display()
-    .then(() => {
-        console.log("display ok");
-    })
-    .catch(err => {
-        console.error("display error:", err);
-    });
+.then(() => {
+    console.log("DISPLAY SUCCESS");
+})
+.catch(err => {
+    console.error("DISPLAY FAILED", err);
+});
+
+window.book = book;
+window.rendition = rendition;
 
 </script>
 
