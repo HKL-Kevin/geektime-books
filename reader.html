@@ -9,16 +9,19 @@
 <style>
 html,body{
     margin:0;
+    padding:0;
     width:100%;
     height:100%;
 }
 
 #viewer{
-    width:100%;
-    height:100%;
+    position:fixed;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
 }
 </style>
-
 </head>
 
 <body>
@@ -27,26 +30,33 @@ html,body{
 
 <script>
 
-const params =
-    new URLSearchParams(location.search);
+const params = new URLSearchParams(location.search);
+const bookFile = params.get("book");
 
-const bookFile =
-    params.get("book");
+console.log("book:", bookFile);
 
-if(!bookFile){
-    alert("未指定书籍");
-}
+const book = ePub(bookFile);
 
-const book =
-    ePub(bookFile);
+const rendition = book.renderTo("viewer", {
+    width: "100%",
+    height: "100%"
+});
 
-const rendition =
-    book.renderTo("viewer",{
-        width:"100%",
-        height:"100%"
+book.ready.then(() => {
+    console.log("book ready");
+});
+
+rendition.on("rendered", (section) => {
+    console.log("rendered:", section.href);
+});
+
+rendition.display()
+    .then(() => {
+        console.log("display ok");
+    })
+    .catch(err => {
+        console.error("display error:", err);
     });
-
-rendition.display();
 
 </script>
 
